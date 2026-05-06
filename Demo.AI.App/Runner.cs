@@ -2,14 +2,9 @@
 
 public static class Runner
 {
-    public static async Task RunGitHubProviderAsync<T>(IConfiguration config,
-        MicrosoftAIMessage.ChatMessage? message = null,
+    public static async Task RunGitHubProviderAsync<T>(MicrosoftAIMessage.ChatMessage? message = null,
         AITool? aITool = null)
     {
-        var key = config["GITHUB_TOKEN"]!;
-
-        var endpoint = config["GIT_HUB_END_POINT"]!;
-
         var instructions = new StringBuilder();
 
         instructions.AppendLine(string.Format(Instructions.YOU_ARE_EXPERT, Instructions.DOT_NET_ECOSYS));
@@ -24,12 +19,15 @@ public static class Runner
         if (aITool is not null)
             tools.Add(aITool);
 
-        var chatClientAgent = Client.OnlineProvider(AIModelName.GPT_4_1_NANO, key, endpoint, chatOptions: new()
-        {
-            Instructions = instructions.ToString(),
-            Tools = tools,
+        var chatClientAgent = Client.OnlineProvider(AIModelName.GPT_4_1_NANO,
+            AppConfiguration.GitHubToken,
+            AppConfiguration.GitHubEndpoint,
+            chatOptions: new()
+            {
+                Instructions = instructions.ToString(),
+                Tools = tools,
 
-        });
+            });
 
         message ??= new(ChatRole.User, "Hello!");
 
